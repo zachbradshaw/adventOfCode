@@ -1,0 +1,14 @@
+{
+    "name": "adventOfCode",
+    "version": "1.0.0",
+    "description": "🎄 Advent of Code 🎄",
+    "main": "index.js",
+    "scripts": {
+        "test": "mocha 20*/**/test.js"
+    },
+    "author": "Zach Bradshaw <bradshaw.zachary@gmail.com>",
+    "license": "ISC",
+    "devDependencies": {
+        "mocha": "^5.0.4"
+    }
+}
