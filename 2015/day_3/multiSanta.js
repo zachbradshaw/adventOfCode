@@ -1,37 +1,40 @@
 const multiSanta = input => {
-    let realSanta = ['x: 0 y: 0'];
-    let roboSanta = ['x: 0 y: 0'];
-    let realSantaX = 0;
-    let realSantaY = 0;
-    let roboSantaX = 0;
-    let roboSantaY = 0;
+    let realSanta = {
+        houses: ['x: 0 y: 0'],
+        x: 0,
+        y: 0
+    };
+    let roboSanta = {
+        houses: ['x: 0 y: 0'],
+        x: 0,
+        y: 0
+    };
 
     input.split('').forEach((direction, index) => {
         const isRealSanta = index % 2 === 0;
         let currentSanta = isRealSanta ? realSanta : roboSanta;
+
         switch (direction) {
             case '^':
-                isRealSanta ? realSantaY++ : roboSantaY++;
+                currentSanta.y++;
                 break;
             case '>':
-                isRealSanta ? realSantaX++ : roboSantaX++;
+                currentSanta.x++;
                 break;
             case 'v':
-                isRealSanta ? realSantaY-- : roboSantaY--;
+                currentSanta.y--;
                 break;
             case '<':
-                isRealSanta ? realSantaX-- : roboSantaX--;
+                currentSanta.x--;
                 break;
         }
 
-        currentSanta.push(
-            `x: ${isRealSanta ? realSantaX : roboSantaX} y: ${
-                isRealSanta ? realSantaY : roboSantaY
-            }`
-        );
+        currentSanta.houses.push(`x: ${currentSanta.x} y: ${currentSanta.y}`);
     });
 
-    const uniqueHouses = [...new Set(realSanta.concat(roboSanta))];
+    const uniqueHouses = [
+        ...new Set(realSanta.houses.concat(roboSanta.houses))
+    ];
     return uniqueHouses.length;
 };
 
