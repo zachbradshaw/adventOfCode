@@ -1,15 +1,15 @@
 {
-    "name": "adventOfCode",
-    "version": "1.0.0",
-    "description": "🎄 Advent of Code 🎄",
-    "main": "index.js",
-    "scripts": {
-        "test": "mocha 20*/**/test.js"
-    },
-    "author": "Zach Bradshaw <bradshaw.zachary@gmail.com>",
-    "license": "ISC",
-    "devDependencies": {
-        "prettier": "^1.15.1"
-    },
-    "dependencies": {}
+  "name": "adventOfCode",
+  "version": "1.0.0",
+  "description": "🎄 Advent of Code 🎄",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Zach Bradshaw <bradshaw.zachary@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^23.6.0",
+    "prettier": "^1.15.1"
+  }
 }
