@@ -7,7 +7,7 @@ const input = fs
 function partOne(input) {
   let total = 0;
   input.split("\n").forEach(val => {
-    total = eval(`${total} ${val}`);
+    total += Number(val);
   });
   return total;
 }
@@ -15,7 +15,7 @@ function partOne(input) {
 function partTwo(input, currentVal = 0, frequencies = {}) {
   let total = currentVal;
   for (let val of input.split("\n")) {
-    total = eval(`${total} ${val}`);
+    total += Number(val);
 
     if (!frequencies[total]) {
       frequencies[total] = total;
@@ -26,8 +26,8 @@ function partTwo(input, currentVal = 0, frequencies = {}) {
   return partTwo(input, total, frequencies);
 }
 
-// console.log(partOne(input)); // 497
-// console.log(partTwo(input)); // 558
+// console.log("Part one:", partOne(input)); // 497
+// console.log("Part two:", partTwo(input)); // 558
 
 module.exports = {
   partOne,
