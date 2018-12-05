@@ -25,14 +25,36 @@ function partOne(input) {
         let currentX = x + i;
         let currentY = y + j;
         !coords.hasOwnProperty(`${currentX},${currentY}`)
-          ? (coords[`${currentX},${currentY}`] = { id, value: 1 })
-          : (coords[`${currentX},${currentY}`].value =
-              coords[`${currentX},${currentY}`].value + 1);
+          ? (coords[`${currentX},${currentY}`] = {
+              id: [id],
+              sqIn: width * height
+            })
+          : (coords[`${currentX},${currentY}`] = {
+              ...coords[`${currentX},${currentY}`],
+              id: [...coords[`${currentX},${currentY}`].id, id]
+            });
       }
     }
   });
-  console.log(coords);
-  console.log(Object.values(coords).filter(count => count.value > 1).length);
+
+  const test = {};
+  const coordIds = Object.values(coords).filter(coord => coord.id.length === 1);
+  coordIds.forEach(coordId => {
+    if (!test.hasOwnProperty(coordId.id)) {
+      test[coordId.id] = { id: [coordId.id[0]], sqIn: coordId.sqIn };
+    } else {
+      test[coordId.id] = {
+        ...test[coordId.id],
+        id: [...test[coordId.id].id, coordId.id[0]]
+      };
+    }
+  });
+  console.log(
+    Object.values(test).filter(foo => foo.id.length === foo.sqIn)[0].id[0]
+  );
+  console.log(
+    Object.values(coords).filter(count => count.id.length > 1).length
+  );
 }
 
 partOne(input);
