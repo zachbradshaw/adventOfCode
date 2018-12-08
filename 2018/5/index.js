@@ -6,40 +6,45 @@ const input = fs
 
 const testInput = "dabAcCaCBAcCcaDA";
 function partOne(input) {
-  //   console.log("input:", input, input.length);
-  //   const result = input.split("").reduce((acc, val, idx, arr) => {
-  //     // console.log(acc, val);
-  //     // console.log(val, arr[idx + 1]);
-  //     if (val === arr[idx + 1]) {
-  //       acc.push(val);
-  //     } else {
-  //       if (arr[idx + 1] && val.toUpperCase() === arr[idx + 1].toUpperCase()) {
-  //         arr.splice(idx, 1);
-  //       } else {
-  //         acc.push(val);
-  //       }
-  //     }
-
-  //     return acc;
-  //   }, []);
-  const arr = input.split("");
-  const loop = (start = 0, arr) => {
-    // console.log(arr.length);
-    for (let i = start; i < arr.length; i++) {
-      if (arr[i] !== arr[i + 1]) {
-        if (arr[i + 1] && arr[i].toUpperCase() === arr[i + 1].toUpperCase()) {
-          arr.splice(i, 2);
-          loop(arr[i - 1], arr);
-        }
+  input = input.split("");
+  while (true) {
+    let didSomething = false;
+    for (let i = 0; i < input.length; i++) {
+      let lower = input[i].toLowerCase();
+      let upper = input[i].toUpperCase();
+      if (
+        input[i] === lower ? input[i + 1] === upper : input[i + 1] === lower
+      ) {
+        input = input.slice(0, i).concat(input.slice(i + 2));
+        didSomething = true;
+        break;
       }
     }
-  };
-  loop(0, arr);
-
-  console.log(arr.length);
+    if (!didSomething) break;
+  }
+  console.log(input.length);
 }
 
-partOne(input);
+function partTwo(input) {
+  input = input.split("");
+  let seen = {};
+  input.forEach(char => {
+    if (!seen.hasOwnProperty(char)) {
+      seen[char] = { count: 1, char };
+    } else {
+      seen[char] = { ...seen[char], count: seen[char].count + 1 };
+    }
+  });
+  console.log(seen);
+  console.log(
+    Object.keys(seen).reduce((acc, val) => {
+      return Math.max(acc.count, val.count);
+    })
+  );
+}
+
+// partOne(input);
+partTwo(testInput);
 module.exports = {
   partOne
 };
