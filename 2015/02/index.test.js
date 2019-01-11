@@ -1,5 +1,4 @@
 const { partOne, partTwo } = require("./index");
-const ribbon = require("./ribbon");
 
 describe("partOne", () => {
   it("should return 58", () => {
