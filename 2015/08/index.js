@@ -4,20 +4,26 @@ const input = fs
   .readFileSync(path.resolve(__dirname, "./input.txt"), "utf8")
   .trim();
 
-const getStringLength = line => {
-  return {
-    partOne: line.length - eval(line).length,
-    partTwo: JSON.stringify(line).length - line.length
-  };
+function partOne(input) {
+  let length = 0;
+  input
+    .split("\n")
+    .forEach(line => (length += line.length - eval(line).length));
+  return length;
+}
+
+function partTwo(input) {
+  let length = 0;
+  input
+    .split("\n")
+    .forEach(line => (length += JSON.stringify(line).length - line.length));
+  return length;
+}
+
+// console.log("Part One:", partOne(input));
+// console.log("Part Two:", partTwo(input));
+
+module.exports = {
+  partOne,
+  partTwo
 };
-
-let partOne = 0;
-let partTwo = 0;
-input.split("\n").forEach(line => {
-  let length = getStringLength(line);
-  partOne += length.partOne;
-  partTwo += length.partTwo;
-});
-
-console.log("Part One:", partOne);
-console.log("Part Two:", partTwo);
