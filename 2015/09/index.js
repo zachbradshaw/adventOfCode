@@ -7,10 +7,9 @@ const input = fs
 const locations = [];
 const distances = [];
 input.split("\n").forEach(line => {
-  const splitDistanceString = line.split(" ");
-  const start = splitDistanceString[0];
-  const end = splitDistanceString[2];
-  const distance = splitDistanceString[4];
+  const stripChars = line.replace(/to|=/g, " ");
+  console.log(stripChars.trim().split(" "));
+  const [start, end, distance] = stripChars.split(" ");
 
   if (locations.indexOf(start) < 0) {
     locations.push(start);
