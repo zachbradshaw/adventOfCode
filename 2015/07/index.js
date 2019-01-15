@@ -7,134 +7,35 @@ const input = fs
 const testInput =
   "123 -> x\n456 -> y\nx AND y -> d\nx OR y -> e\nx LSHIFT 2 -> f\ny RSHIFT 2 -> g\nNOT x -> h\nNOT y -> i";
 
-console.log(
-  testInput
-    .split("\n")
-    .forEach(i =>
-      i.shift().match(/([a-z0-9]*)\b\s?([A-Z]+)?\s?(\S+)\s->\s(\S+)/)
-    )
-);
+function partOneAndTwo(input, wires = {}) {
+  const splitInput = input.split("\n");
+  const operands = {
+    AND: (a, b) => a & b,
+    OR: (a, b) => a | b,
+    RSHIFT: (a, b) => a >> b,
+    LSHIFT: (a, b) => a << b,
+    NOT: (a, b) => b ^ 65535,
+    VAL: (a, b) => b
+  };
 
-// testInput.forEach((command, i) => {
-//   const splitCommand = command.split("->");
-//   splitCommand[0].replace(/(AND|OR|LSHIFT|RSHIFT|NOT)/, match => {
-//     console.log(match);
+  while (splitInput.length) {
+    const [command, a, operand, b, destinationWire] = splitInput
+      .shift()
+      .match(/([a-z0-9]*)\b\s?([A-Z]+)?\s?(\S+)\s->\s(\S+)/);
+    if ([a, b].every(i => !i || wires.hasOwnProperty(i) || /\d+/.test(i))) {
+      wires[destinationWire] =
+        wires[destinationWire] ||
+        operands[operand || "VAL"](...[a, b].map(i => wires[i] || +i));
+    } else {
+      splitInput.push(command);
+    }
+  }
+  return wires;
+}
 
-//     switch (match) {
-//       case "AND":
-//         return "&";
-//       case "OR":
-//         return "|";
-//       case "RSHIFT":
-//         return ">>";
-//       case "LSHIFT":
-//         return "<<";
-//       case "NOT":
-//         return "~";
-//     }
-//   });
-//   console.log(splitCommand.join(""));
-// });
+// console.log("Part one:", partOneAndTwo(input).a);
+// console.log("Part two:", partOneAndTwo(input, { b: partOneAndTwo(input) }).a);
 
-// const circuit = {};
-
-// const replaceOperand = (str, match) => {
-//   let operand;
-//   if (match) {
-//     switch (match[0]) {
-//       case "AND":
-//         operand = "&";
-//         break;
-//       case "OR":
-//         operand = "|";
-//         break;
-//       case "RSHIFT":
-//         operand = ">>";
-//         break;
-//       case "LSHIFT":
-//         operand = "<<";
-//         break;
-//       default:
-//         operand = "~";
-//         break;
-//     }
-//     return str.replace(new RegExp(match[0]), operand);
-//   }
-
-//   return str;
-// };
-
-// const loop = input => {
-//   input.split("\n").forEach(command => {
-//     const commandSplit = command.split("->");
-//     let commandInfo = {
-//       command: replaceOperand(
-//         commandSplit[0].trim(),
-//         command.match(/\b[A-Z]+\b/g)
-//       ),
-//       destination: commandSplit[1].trim()
-//     };
-// console.log(commandInfo);
-
-// if (commandInfo.command.match(/\b[0-9]+\b/g)) {
-//   commandInfo.value = parseInt(command.match(/\b[0-9]+\b/g), 10);
-// } else {
-//   switch (commandInfo.operator[0]) {
-//     case "AND":
-//       commandInfo.value =
-//         circuit[commandInfo.commandSplit[0]] &
-//         circuit[commandInfo.commandSplit[2]];
-//       break;
-//     case "OR":
-//       commandInfo.value =
-//         circuit[commandInfo.commandSplit[0]] |
-//         circuit[commandInfo.commandSplit[2]];
-//       break;
-//     case "RSHIFT":
-//       commandInfo.value =
-//         circuit[commandInfo.commandSplit[0]] >>>
-//         commandInfo.commandSplit[2];
-//       break;
-//     case "LSHIFT":
-//       commandInfo.value =
-//         circuit[commandInfo.commandSplit[0]] << commandInfo.commandSplit[2];
-//       break;
-//     case "NOT":
-//       commandInfo.value = ~(circuit[commandInfo.commandSplit[1]] >>> 0);
-//       break;
-//   }
-// }
-
-//     if (!circuit.hasOwnProperty(commandInfo.destination)) {
-//       const hasBitwiseOperator =
-//         commandInfo.command.includes(">>") ||
-//         commandInfo.command.includes("<<") ||
-//         commandInfo.command.includes("|") ||
-//         commandInfo.command.includes("&") ||
-//         commandInfo.command.includes("~");
-//       const nonBitwiseValue = commandInfo.command.match(/\b[0-9]+\b/g);
-//       if (!hasBitwiseOperator && nonBitwiseValue) {
-//         commandInfo.value = Number(nonBitwiseValue[0]);
-//       }
-//       circuit[commandInfo.destination] = commandInfo.value || null;
-//     }
-
-//     if (circuit[commandInfo.destination] === null) {
-//       const wiresToCheck = commandInfo.command.match(/[a-z]/g);
-//       wiresToCheck.forEach(wire => {
-//         if (circuit[wire] === null) {
-//           return;
-//         }
-//         const wireValue = circuit[wire];
-//         commandInfo.command = commandInfo.command.replace(wire, wireValue);
-//       });
-//       if (!commandInfo.command.match(/[a-z]/g)) {
-//         circuit[commandInfo.destination] = eval(commandInfo.command);
-//       }
-//     }
-//   });
-// };
-
-// loop(testInput);
-// console.log(circuit);
-// console.log("Wire 'A' has a value of:", circuit.a);
+module.exports = {
+  partOneAndTwo
+};
