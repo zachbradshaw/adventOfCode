@@ -29,8 +29,8 @@ function partTwo(input) {
   return basementIndex[0];
 }
 
-console.log("Part one:", partOne(input));
-console.log("Part two:", partTwo(input));
+// console.log("Part one:", partOne(input));
+// console.log("Part two:", partTwo(input));
 
 module.exports = {
   partOne,
