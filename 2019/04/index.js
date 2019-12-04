@@ -63,5 +63,7 @@ const partTwo = () => {
   console.log("Part two:", countValidPasswords(partTwoValidator));
 };
 
+console.time("Completed in");
 partOne(input);
 partTwo(input);
+console.timeEnd("Completed in");

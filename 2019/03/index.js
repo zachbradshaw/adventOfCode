@@ -95,7 +95,9 @@ function partOne(input) {
   console.log("Part two:", stepCounts.sort((a, b) => a - b)[0]);
 }
 
+console.time("Completed in");
 partOne(input);
+console.timeEnd("Completed in");
 
 module.exports = {
   partOne

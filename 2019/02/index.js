@@ -55,8 +55,10 @@ function partTwo() {
   }
 }
 
+console.time("Completed in");
 partOne(input, 12, 2);
 partTwo();
+console.timeEnd("Completed in");
 
 module.exports = {
   partOne,

@@ -9,7 +9,7 @@ function partOne(input) {
   input.split("\n").forEach(mass => {
     total += Math.floor(mass / 3) - 2;
   });
-  console.log(total);
+  console.log("Part one:", total);
 }
 
 function partTwo(input) {
@@ -23,8 +23,10 @@ function partTwo(input) {
     }
   };
   input.split("\n").forEach(loop);
-  console.log(total);
+  console.log("Part two:", total);
 }
 
+console.time("Completed in");
 partOne(input);
 partTwo(input);
+console.timeEnd("Completed in");
