@@ -40,10 +40,14 @@ const getJumpForward = code => {
   }
 };
 
-const computer = input => {
+const computer = (input, data, index = null, jump = null) => {
   const splitData = data.split(",").map(Number);
-  let jumpForward = getJumpForward(splitData[0]);
-  for (let i = 0; i < splitData.length; i += jumpForward) {
+  let jumpForward = jump ? jump : getJumpForward(splitData[0]);
+  for (
+    let i = index ? index + jumpForward : 0;
+    i < splitData.length;
+    i += jumpForward
+  ) {
     if (i !== 0 && i !== splitData.length - 1) {
       jumpForward = getJumpForward(parseOpcode(splitData[i]));
     }
@@ -89,7 +93,17 @@ const computer = input => {
         break;
       case 3:
         destParam = section[1];
-        splitData[destParam] = input;
+        if (input.length > 1) {
+          splitData[destParam] = input.shift();
+        } else {
+          splitData[destParam] = input[0];
+          // return {
+          //   paused: true,
+          //   index: i,
+          //   jumpForward,
+          //   data: splitData.join(",")
+          // };
+        }
         break;
       case 4:
         let code;
@@ -103,9 +117,9 @@ const computer = input => {
           code = splitData[destParam];
         }
         if (code !== 0) {
-          return code;
+          return { code, data: splitData.join(","), index: i, jumpForward };
         } else {
-          console.log("Test passed");
+          // console.log("Test passed");
         }
         break;
       case 5:
@@ -191,7 +205,9 @@ const computer = input => {
   }
 };
 
-console.time("Completed in");
-console.log(computer(1));
-console.log(computer(5));
-console.timeEnd("Completed in");
+// console.log(computer(1));
+// console.log(computer(5));
+
+module.exports = {
+  computer
+};
