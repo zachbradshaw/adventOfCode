@@ -1,31 +1,14 @@
 const path = require("path");
 const fs = require("fs");
-const { computer } = require("../05/index");
+const computer = require("../computer");
+const permutations = require("../../lib/permutations");
 const input = fs
   .readFileSync(path.resolve(__dirname, "./input.txt"), "utf8")
   .trim();
 
-const getAllPossibleSequences = options => {
-  let results = [];
-  if (options.length === 1) {
-    results.push(options);
-    return results;
-  }
-
-  for (let i = 0; i < options.length; i++) {
-    let firstOption = options[i];
-    let optionsLeft = options.slice(0, i).concat(options.slice(i + 1));
-    let innerOptions = getAllPossibleSequences(optionsLeft);
-    for (let j = 0; j < innerOptions.length; j++) {
-      results.push([firstOption].concat(innerOptions[j]));
-    }
-  }
-  return results;
-};
-
 const partOne = input => {
   const results = [];
-  const sequences = getAllPossibleSequences([0, 1, 2, 3, 4]);
+  const sequences = permutations([0, 1, 2, 3, 4]);
   sequences.forEach(sequence => {
     let result = null;
     sequence.forEach((setting, index) => {
@@ -41,7 +24,7 @@ const partOne = input => {
 };
 
 const partTwo = input => {
-  const sequences = getAllPossibleSequences([5, 6, 7, 8, 9]);
+  const sequences = permutations([5, 6, 7, 8, 9]);
   const results = [];
   sequences.forEach(sequence => {
     let result = null;

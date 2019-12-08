@@ -3,6 +3,7 @@ const fs = require("fs");
 const input = fs
   .readFileSync(path.resolve(__dirname, "./input.txt"), "utf8")
   .trim();
+const permutations = require("../../lib/permutations");
 
 const createSeatingGuide = (input, addMe = false) => {
   let guide = {};
@@ -34,24 +35,6 @@ const createSeatingGuide = (input, addMe = false) => {
   return guide;
 };
 
-const getAllPossibleArangements = names => {
-  let results = [];
-  if (names.length === 1) {
-    results.push(names);
-    return results;
-  }
-
-  for (let i = 0; i < names.length; i++) {
-    let firstName = names[i];
-    let namesLeft = names.slice(0, i).concat(names.slice(i + 1));
-    let innerNames = getAllPossibleArangements(namesLeft);
-    for (let j = 0; j < innerNames.length; j++) {
-      results.push([firstName].concat(innerNames[j]));
-    }
-  }
-  return results;
-};
-
 const calculateHappinessChange = (guide, arrangement) => {
   let happinessChange = 0;
   arrangement.forEach((name, i, arr) => {
@@ -69,9 +52,7 @@ const calculateHappinessChange = (guide, arrangement) => {
 
 const findOptimalHappinessChange = (addMe = false) => {
   const seatingGuide = createSeatingGuide(input, addMe);
-  const allPossibleArrangements = getAllPossibleArangements(
-    Object.keys(seatingGuide)
-  );
+  const allPossibleArrangements = permutations(Object.keys(seatingGuide));
   let happinessChangeTotals = [];
   allPossibleArrangements.forEach(arrangement => {
     const happinessChange = calculateHappinessChange(seatingGuide, arrangement);

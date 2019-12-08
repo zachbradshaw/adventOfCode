@@ -3,6 +3,7 @@ const fs = require("fs");
 const input = fs
   .readFileSync(path.resolve(__dirname, "./input.txt"), "utf8")
   .trim();
+const permutations = require("../../lib/permutations");
 
 const locationNames = [];
 const locations = {};
@@ -36,26 +37,8 @@ routes.forEach(route => {
   }
 });
 
-const getAllPossibleRoutes = options => {
-  let results = [];
-  if (options.length === 1) {
-    results.push(options);
-    return results;
-  }
-
-  for (let i = 0; i < options.length; i++) {
-    let firstOption = options[i];
-    let optionsLeft = options.slice(0, i).concat(options.slice(i + 1));
-    let innerOptions = getAllPossibleRoutes(optionsLeft);
-    for (let j = 0; j < innerOptions.length; j++) {
-      results.push([firstOption].concat(innerOptions[j]));
-    }
-  }
-  return results;
-};
-
 const distances = [];
-getAllPossibleRoutes(locationNames).forEach(route => {
+permutations(locationNames).forEach(route => {
   let distance = 0;
   route.forEach((stop, i) => {
     if (i !== 0) {
@@ -64,4 +47,6 @@ getAllPossibleRoutes(locationNames).forEach(route => {
   });
   distances.push(distance);
 });
-console.log(distances.sort((a, b) => b - a)[0]);
+
+console.log("Part one:", distances.sort((a, b) => a - b)[0]);
+console.log("Part two:", distances.sort((a, b) => b - a)[0]);
