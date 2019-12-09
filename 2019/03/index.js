@@ -60,6 +60,8 @@ function partOne(input) {
   const { coordsArray: firstWireCoords, stepArray: firstWireSteps } = getCoords(
     firstWirePath
   );
+  console.log(firstWireCoords.length);
+
   const {
     coordsArray: secondWireCoords,
     stepArray: secondWireSteps
@@ -68,7 +70,9 @@ function partOne(input) {
   const intersections = [];
   const stepCounts = [];
   for (let i = 0; i < firstWireCoords.length; i++) {
-    if (secondWireCoords.indexOf(firstWireCoords[i]) !== -1) {
+    let position = secondWireCoords.map(i => i).indexOf(firstWireCoords[i]);
+
+    if (position !== -1) {
       intersections.push({
         manhattanDistance: firstWireCoords[i]
           .split(",")
@@ -78,6 +82,8 @@ function partOne(input) {
       });
     }
   }
+  console.log(intersections.length);
+
   intersections.forEach(int => {
     const firstWireStep = firstWireSteps.filter(
       step => step.coord === int.matchingCoord
@@ -87,12 +93,12 @@ function partOne(input) {
     );
     stepCounts.push(firstWireStep[0].count + secondWireStep[0].count);
   });
-  console.log(
-    "Part one:",
-    intersections.sort((a, b) => a.manhattanDistance - b.manhattanDistance)[0]
-      .manhattanDistance
-  );
-  console.log("Part two:", stepCounts.sort((a, b) => a - b)[0]);
+  // console.log(
+  //   "Part one:",
+  //   intersections.sort((a, b) => a.manhattanDistance - b.manhattanDistance)[0]
+  //     .manhattanDistance
+  // );
+  // console.log("Part two:", stepCounts.sort((a, b) => a - b)[0]);
 }
 
 console.time("Completed in");
