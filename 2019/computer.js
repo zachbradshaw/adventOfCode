@@ -37,9 +37,8 @@ const getJumpForward = code => {
 
 const computer = (input, data, index = null, jump = null) => {
   const splitData = data.split(",").map(Number);
-  let jumpForward = jump ? jump : getJumpForward(splitData[0]);
+  let jumpForward = jump ? jump : getJumpForward(parseOpcode(splitData[0]));
   let relativeBase = 0;
-  let extraMemory = 0;
   for (
     let i = index ? index + jumpForward : 0;
     i < splitData.length;
@@ -54,6 +53,7 @@ const computer = (input, data, index = null, jump = null) => {
     let parameterMode = null;
     const rawOpcode = section[0];
     const parsedOpcode = parseOpcode(section[0]);
+
     switch (parsedOpcode) {
       case 1:
         if (rawOpcode.toString().length > 1) {
@@ -67,27 +67,37 @@ const computer = (input, data, index = null, jump = null) => {
         if (parameterMode) {
           switch (parameterMode[0]) {
             case 0:
-              param1 = splitData[param1];
+              param1 = splitData[param1] || 0;
               break;
             case 1:
               break;
             case 2:
-              param1 = relativeBase += param1;
+              param1 = splitData[param1 + relativeBase] || 0;
               break;
           }
           switch (parameterMode[1]) {
             case 0:
-              param2 = splitData[param2];
+              param2 = splitData[param2] || 0;
               break;
             case 1:
               break;
             case 2:
-              param2 = relativeBase += param2;
+              param2 = splitData[param2 + relativeBase] || 0;
+              break;
+          }
+          switch (parameterMode[2]) {
+            case 0:
+              break;
+            case 1:
+              break;
+            case 2:
+              destParam += relativeBase;
               break;
           }
           splitData[destParam] = param1 + param2;
         } else {
-          splitData[destParam] = splitData[param1] + splitData[param2];
+          splitData[destParam] =
+            splitData[param1] || 0 + splitData[param2] || 0;
         }
         break;
       case 2:
@@ -101,31 +111,57 @@ const computer = (input, data, index = null, jump = null) => {
         if (parameterMode) {
           switch (parameterMode[0]) {
             case 0:
-              param1 = splitData[param1];
+              param1 = splitData[param1] || 0;
               break;
             case 1:
               break;
             case 2:
-              param1 = relativeBase += param1;
+              param1 = splitData[param1 + relativeBase] || 0;
               break;
           }
           switch (parameterMode[1]) {
             case 0:
-              param2 = splitData[param2];
+              param2 = splitData[param2] || 0;
               break;
             case 1:
               break;
             case 2:
-              param2 = relativeBase += param2;
+              param2 = splitData[param2 + relativeBase] || 0;
+              break;
+          }
+          switch (parameterMode[2]) {
+            case 0:
+              break;
+            case 1:
+              break;
+            case 2:
+              destParam += relativeBase;
               break;
           }
           splitData[destParam] = param1 * param2;
         } else {
-          splitData[destParam] = splitData[param1] * splitData[param2];
+          splitData[destParam] =
+            splitData[param1] || 0 * splitData[param2] || 0;
         }
         break;
       case 3:
+        if (rawOpcode.toString().length > 1) {
+          parameterMode = getParameterModes(rawOpcode);
+        }
         destParam = section[1];
+        if (parameterMode) {
+          switch (parameterMode[0]) {
+            case 0:
+              break;
+            case 1:
+              break;
+            case 2:
+              destParam += relativeBase;
+              break;
+          }
+        } else {
+          destParam = splitData[destParam] || 0;
+        }
         splitData[destParam] = input.shift();
         break;
       case 4:
@@ -137,17 +173,17 @@ const computer = (input, data, index = null, jump = null) => {
         if (parameterMode) {
           switch (parameterMode[0]) {
             case 0:
-              code = splitData[destParam];
+              code = splitData[destParam] || 0;
               break;
             case 1:
               code = destParam;
               break;
             case 2:
-              code = relativeBase += destParam;
+              code = splitData[destParam + relativeBase] || 0;
               break;
           }
         } else {
-          code = splitData[destParam];
+          code = splitData[destParam] || 0;
         }
         if (code !== 0) {
           return {
@@ -155,7 +191,8 @@ const computer = (input, data, index = null, jump = null) => {
             data: splitData.join(","),
             index: i,
             jumpForward,
-            lastInstruction: section
+            lastInstruction: section,
+            relativeBase
           };
         }
         break;
@@ -167,8 +204,26 @@ const computer = (input, data, index = null, jump = null) => {
         param2 = section[2];
 
         if (parameterMode) {
-          param1 = parameterMode[0] === 0 ? splitData[param1] : param1;
-          param2 = parameterMode[1] === 0 ? splitData[param2] : param2;
+          switch (parameterMode[0]) {
+            case 0:
+              param1 = splitData[param1] || 0;
+              break;
+            case 1:
+              break;
+            case 2:
+              param1 = splitData[param1 + relativeBase] || 0;
+              break;
+          }
+          switch (parameterMode[1]) {
+            case 0:
+              param2 = splitData[param2] || 0;
+              break;
+            case 1:
+              break;
+            case 2:
+              param2 = splitData[param2 + relativeBase] || 0;
+              break;
+          }
 
           if (param1 !== 0) {
             i = param2 - jumpForward;
@@ -190,22 +245,22 @@ const computer = (input, data, index = null, jump = null) => {
         if (parameterMode) {
           switch (parameterMode[0]) {
             case 0:
-              param1 = splitData[param1];
+              param1 = splitData[param1] || 0;
               break;
             case 1:
               break;
             case 2:
-              param1 = relativeBase += param1;
+              param1 = splitData[param1 + relativeBase] || 0;
               break;
           }
           switch (parameterMode[1]) {
             case 0:
-              param2 = splitData[param2];
+              param2 = splitData[param2] || 0;
               break;
             case 1:
               break;
             case 2:
-              param2 = relativeBase += param2;
+              param2 = splitData[param2 + relativeBase] || 0;
               break;
           }
 
@@ -231,27 +286,37 @@ const computer = (input, data, index = null, jump = null) => {
         if (parameterMode) {
           switch (parameterMode[0]) {
             case 0:
-              param1 = splitData[param1] ? splitData[param1] : extraMemory;
+              param1 = splitData[param1] || 0;
               break;
             case 1:
               break;
             case 2:
-              param1 = relativeBase += param1;
+              param1 = splitData[param1 + relativeBase] || 0;
               break;
           }
           switch (parameterMode[1]) {
             case 0:
-              param2 = splitData[param2];
+              param2 = splitData[param2] || 0;
               break;
             case 1:
               break;
             case 2:
-              param2 = relativeBase += param2;
+              param2 = splitData[param2 + relativeBase] || 0;
+              break;
+          }
+          switch (parameterMode[2]) {
+            case 0:
+              break;
+            case 1:
+              break;
+            case 2:
+              destParam += relativeBase;
               break;
           }
           splitData[destParam] = param1 < param2 ? 1 : 0;
         } else {
-          splitData[destParam] = splitData[param1] < splitData[param2] ? 1 : 0;
+          splitData[destParam] =
+            splitData[param1] || 0 < splitData[param2] || 0 ? 1 : 0;
         }
         break;
       case 8:
@@ -266,28 +331,37 @@ const computer = (input, data, index = null, jump = null) => {
         if (parameterMode) {
           switch (parameterMode[0]) {
             case 0:
-              param1 = splitData[param1];
+              param1 = splitData[param1] || 0;
               break;
             case 1:
               break;
             case 2:
-              param1 = relativeBase += param1;
+              param1 = splitData[param1 + relativeBase] || 0;
               break;
           }
           switch (parameterMode[1]) {
             case 0:
-              param2 = splitData[param2];
+              param2 = splitData[param2] || 0;
               break;
             case 1:
               break;
             case 2:
-              param2 = relativeBase += param2;
+              param2 = splitData[param2 + relativeBase] || 0;
+              break;
+          }
+          switch (parameterMode[2]) {
+            case 0:
+              break;
+            case 1:
+              break;
+            case 2:
+              destParam += relativeBase;
               break;
           }
           splitData[destParam] = param1 === param2 ? 1 : 0;
         } else {
           splitData[destParam] =
-            splitData[param1] === splitData[param2] ? 1 : 0;
+            splitData[param1] || 0 === splitData[param2] || 0 ? 1 : 0;
         }
         break;
       case 9:
@@ -300,19 +374,16 @@ const computer = (input, data, index = null, jump = null) => {
         if (parameterMode) {
           switch (parameterMode[0]) {
             case 0:
-              param1 = splitData[param1];
-              break;
+              relativeBase += splitData[param1] || 0;
             case 1:
+              relativeBase += param1;
               break;
             case 2:
-              param1 = relativeBase += param1;
+              relativeBase += splitData[param1 + relativeBase] || 0;
               break;
           }
-
-          splitData[destParam] = param1 === param2 ? 1 : 0;
         } else {
-          splitData[destParam] =
-            splitData[param1] === splitData[param2] ? 1 : 0;
+          relativeBase += splitData[param1] || 0;
         }
         break;
       case 99:
