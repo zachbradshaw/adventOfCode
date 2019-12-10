@@ -39,6 +39,7 @@ const computer = (input, data, index = null, jump = null) => {
   const splitData = data.split(",").map(Number);
   let jumpForward = jump ? jump : getJumpForward(parseOpcode(splitData[0]));
   let relativeBase = 0;
+  let returnCode;
   for (
     let i = index ? index + jumpForward : 0;
     i < splitData.length;
@@ -49,6 +50,8 @@ const computer = (input, data, index = null, jump = null) => {
     }
 
     let section = splitData.slice(i, i + jumpForward);
+    console.log(section);
+
     let param1, param2, destParam;
     let parameterMode = null;
     const rawOpcode = section[0];
@@ -159,8 +162,6 @@ const computer = (input, data, index = null, jump = null) => {
               destParam += relativeBase;
               break;
           }
-        } else {
-          destParam = splitData[destParam] || 0;
         }
         splitData[destParam] = input.shift();
         break;
@@ -183,18 +184,19 @@ const computer = (input, data, index = null, jump = null) => {
               break;
           }
         } else {
-          code = splitData[destParam] || 0;
+          code = splitData[destParam];
         }
-        if (code !== 0) {
-          return {
-            code,
-            data: splitData.join(","),
-            index: i,
-            jumpForward,
-            lastInstruction: section,
-            relativeBase
-          };
-        }
+
+        returnCode = {
+          code,
+          data: splitData.join(","),
+          index: i,
+          jumpForward,
+          lastInstruction: section,
+          relativeBase
+        };
+        console.log({ code, lastInstruction: section });
+
         break;
       case 5:
         if (rawOpcode.toString().length > 1) {
@@ -232,7 +234,6 @@ const computer = (input, data, index = null, jump = null) => {
           if (splitData[param1] !== 0) {
             i = splitData[param2] - jumpForward;
           }
-          break;
         }
         break;
       case 6:
@@ -271,7 +272,6 @@ const computer = (input, data, index = null, jump = null) => {
           if (splitData[param1] === 0) {
             i = splitData[param2] - jumpForward;
           }
-          break;
         }
         break;
       case 7:
@@ -315,8 +315,7 @@ const computer = (input, data, index = null, jump = null) => {
           }
           splitData[destParam] = param1 < param2 ? 1 : 0;
         } else {
-          splitData[destParam] =
-            splitData[param1] || 0 < splitData[param2] || 0 ? 1 : 0;
+          splitData[destParam] = splitData[param1] < splitData[param2] ? 1 : 0;
         }
         break;
       case 8:
@@ -361,7 +360,7 @@ const computer = (input, data, index = null, jump = null) => {
           splitData[destParam] = param1 === param2 ? 1 : 0;
         } else {
           splitData[destParam] =
-            splitData[param1] || 0 === splitData[param2] || 0 ? 1 : 0;
+            splitData[param1] === splitData[param2] ? 1 : 0;
         }
         break;
       case 9:
@@ -387,6 +386,7 @@ const computer = (input, data, index = null, jump = null) => {
         }
         break;
       case 99:
+        return returnCode;
         break;
     }
   }
