@@ -51,12 +51,10 @@ const partTwo = input => {
         } else {
           previousAmpResult = amps[i - 1].code;
         }
-        let result = computer(
-          [previousAmpResult],
-          amps[i].data,
-          amps[i].index,
-          amps[i].jumpForward
-        );
+        let result = computer([previousAmpResult], amps[i].data, {
+          index: amps[i].index,
+          jump: amps[i].jumpForward
+        });
         if (!result) {
           break;
         }

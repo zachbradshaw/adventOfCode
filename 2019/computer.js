@@ -72,13 +72,24 @@ const updateDestParam = (
   }
 };
 
-const computer = (input, data, index = null, jump = null) => {
+const computer = (
+  input,
+  data,
+  config = {
+    index: null,
+    jump: null,
+    collectHistory: { enabled: false, amount: null }
+  }
+) => {
   const splitData = data.split(",").map(Number);
-  let jumpForward = jump ? jump : getJumpForward(parseOpcode(splitData[0]));
+  let jumpForward = config.jump
+    ? config.jump
+    : getJumpForward(parseOpcode(splitData[0]));
   let relBase = 0;
   let returnCode;
+  let codeHistory = [];
   for (
-    let i = index ? index + jumpForward : 0;
+    let i = config.index ? config.index + jumpForward : 0;
     i < splitData.length;
     i += jumpForward
   ) {
@@ -125,18 +136,35 @@ const computer = (input, data, index = null, jump = null) => {
           true,
           splitData
         );
+        if (config.collectHistory && config.collectHistory.enabled) {
+          codeHistory.push(destParam);
 
-        if (destParam !== 0) {
-          return {
-            code: destParam,
-            data: splitData.join(","),
-            index: i,
-            jumpForward,
-            lastInstruction: section,
-            relBase,
-            relBaseVale: splitData[relBase]
-          };
+          if (
+            config.collectHistory.amount &&
+            codeHistory.length === config.collectHistory.amount
+          ) {
+            return {
+              codes: codeHistory,
+              data: splitData.join(","),
+              index: i,
+              jumpForward,
+              lastInstruction: section,
+              relBase
+            };
+          }
+        } else {
+          if (destParam !== 0) {
+            return {
+              code: destParam,
+              data: splitData.join(","),
+              index: i,
+              jumpForward,
+              lastInstruction: section,
+              relBase
+            };
+          }
         }
+
         break;
       case 5:
         mode = getParameterModes(rawOpcode);
@@ -178,7 +206,14 @@ const computer = (input, data, index = null, jump = null) => {
         relBase += param1;
         break;
       case 99:
-        return;
+        return {
+          codes: codeHistory,
+          data: splitData.join(","),
+          index: i,
+          jumpForward,
+          lastInstruction: section,
+          relBase
+        };
     }
   }
 };
