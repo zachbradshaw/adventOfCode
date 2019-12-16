@@ -18,7 +18,7 @@ const getParameterModes = code => {
     }
     return modes;
   }
-  return 0;
+  return [0, 0, 0];
 };
 
 const getJumpForward = code => {
@@ -35,10 +35,47 @@ const getJumpForward = code => {
   }
 };
 
+const updatePositionParam = (mode, positionParam, splitData, relBase) => {
+  switch (mode) {
+    case 0:
+      positionParam = splitData[positionParam] || 0;
+      break;
+    case 1:
+      return positionParam;
+    case 2:
+      positionParam = splitData[positionParam + relBase] || 0;
+      break;
+  }
+  return positionParam;
+};
+
+const updateDestParam = (
+  mode,
+  destParam,
+  relBase,
+  output = false,
+  splitData = null
+) => {
+  switch (mode) {
+    case 0:
+      if (output) {
+        return splitData[destParam] || 0;
+      }
+    case 1:
+      return destParam;
+    case 2:
+      if (output) {
+        return splitData[destParam + relBase] || 0;
+      } else {
+        return (destParam += relBase);
+      }
+  }
+};
+
 const computer = (input, data, index = null, jump = null) => {
   const splitData = data.split(",").map(Number);
   let jumpForward = jump ? jump : getJumpForward(parseOpcode(splitData[0]));
-  let relativeBase = 0;
+  let relBase = 0;
   let returnCode;
   for (
     let i = index ? index + jumpForward : 0;
@@ -52,340 +89,96 @@ const computer = (input, data, index = null, jump = null) => {
     let section = splitData.slice(i, i + jumpForward);
 
     let param1, param2, destParam;
-    let parameterMode = null;
+    let mode = null;
     const rawOpcode = section[0];
     const parsedOpcode = parseOpcode(section[0]);
 
     switch (parsedOpcode) {
       case 1:
-        if (rawOpcode.toString().length > 1) {
-          parameterMode = getParameterModes(rawOpcode);
-        }
+        mode = getParameterModes(rawOpcode);
+        param1 = updatePositionParam(mode[0], section[1], splitData, relBase);
+        param2 = updatePositionParam(mode[1], section[2], splitData, relBase);
+        destParam = updateDestParam(mode[2], section[3], relBase);
 
-        param1 = section[1];
-        param2 = section[2];
-        destParam = section[3];
-
-        if (parameterMode) {
-          switch (parameterMode[0]) {
-            case 0:
-              param1 = splitData[param1] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param1 = splitData[param1 + relativeBase] || 0;
-              break;
-          }
-          switch (parameterMode[1]) {
-            case 0:
-              param2 = splitData[param2] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param2 = splitData[param2 + relativeBase] || 0;
-              break;
-          }
-          switch (parameterMode[2]) {
-            case 0:
-              break;
-            case 1:
-              break;
-            case 2:
-              destParam += relativeBase;
-              break;
-          }
-          splitData[destParam] = param1 + param2;
-        } else {
-          splitData[destParam] =
-            splitData[param1] || 0 + splitData[param2] || 0;
-        }
+        splitData[destParam] = param1 + param2;
         break;
       case 2:
-        if (rawOpcode.toString().length > 1) {
-          parameterMode = getParameterModes(rawOpcode);
-        }
-        param1 = section[1];
-        param2 = section[2];
-        destParam = section[3];
+        mode = getParameterModes(rawOpcode);
+        param1 = updatePositionParam(mode[0], section[1], splitData, relBase);
+        param2 = updatePositionParam(mode[1], section[2], splitData, relBase);
+        destParam = updateDestParam(mode[2], section[3], relBase);
 
-        if (parameterMode) {
-          switch (parameterMode[0]) {
-            case 0:
-              param1 = splitData[param1] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param1 = splitData[param1 + relativeBase] || 0;
-              break;
-          }
-          switch (parameterMode[1]) {
-            case 0:
-              param2 = splitData[param2] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param2 = splitData[param2 + relativeBase] || 0;
-              break;
-          }
-          switch (parameterMode[2]) {
-            case 0:
-              break;
-            case 1:
-              break;
-            case 2:
-              destParam += relativeBase;
-              break;
-          }
-          splitData[destParam] = param1 * param2;
-        } else {
-          splitData[destParam] =
-            splitData[param1] || 0 * splitData[param2] || 0;
-        }
+        splitData[destParam] = param1 * param2;
         break;
       case 3:
-        if (rawOpcode.toString().length > 1) {
-          parameterMode = getParameterModes(rawOpcode);
-        }
-        destParam = section[1];
-        if (parameterMode) {
-          switch (parameterMode[0]) {
-            case 0:
-              break;
-            case 1:
-              break;
-            case 2:
-              destParam += relativeBase;
-              break;
-          }
-        }
+        mode = getParameterModes(rawOpcode);
+        destParam = updateDestParam(mode[0], section[1], relBase);
+
         splitData[destParam] = input.shift();
         break;
       case 4:
-        let code;
-        if (rawOpcode.toString().length > 1) {
-          parameterMode = getParameterModes(rawOpcode);
-        }
-        destParam = section[1];
-        if (parameterMode) {
-          switch (parameterMode[0]) {
-            case 0:
-              code = splitData[destParam] || 0;
-              break;
-            case 1:
-              code = destParam;
-              break;
-            case 2:
-              code = splitData[destParam + relativeBase] || 0;
-              break;
-          }
-        } else {
-          code = splitData[destParam];
-        }
+        mode = getParameterModes(rawOpcode);
+        destParam = updateDestParam(
+          mode[0],
+          section[1],
+          relBase,
+          true,
+          splitData
+        );
 
-        returnCode = {
-          code,
-          data: splitData.join(","),
-          index: i,
-          jumpForward,
-          lastInstruction: section,
-          relativeBase
-        };
-
+        if (destParam !== 0) {
+          return {
+            code: destParam,
+            data: splitData.join(","),
+            index: i,
+            jumpForward,
+            lastInstruction: section,
+            relBase,
+            relBaseVale: splitData[relBase]
+          };
+        }
         break;
       case 5:
-        if (rawOpcode.toString().length > 1) {
-          parameterMode = getParameterModes(rawOpcode);
-        }
-        param1 = section[1];
-        param2 = section[2];
+        mode = getParameterModes(rawOpcode);
+        param1 = updatePositionParam(mode[0], section[1], splitData, relBase);
+        param2 = updatePositionParam(mode[1], section[2], splitData, relBase);
 
-        if (parameterMode) {
-          switch (parameterMode[0]) {
-            case 0:
-              param1 = splitData[param1] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param1 = splitData[param1 + relativeBase] || 0;
-              break;
-          }
-          switch (parameterMode[1]) {
-            case 0:
-              param2 = splitData[param2] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param2 = splitData[param2 + relativeBase] || 0;
-              break;
-          }
-
-          if (param1 !== 0) {
-            i = param2 - jumpForward;
-          }
-        } else {
-          if (splitData[param1] !== 0) {
-            i = splitData[param2] - jumpForward;
-          }
+        if (param1 !== 0) {
+          i = param2 - jumpForward;
         }
         break;
       case 6:
-        if (rawOpcode.toString().length > 1) {
-          parameterMode = getParameterModes(rawOpcode);
-        }
-        param1 = section[1];
-        param2 = section[2];
+        mode = getParameterModes(rawOpcode);
+        param1 = updatePositionParam(mode[0], section[1], splitData, relBase);
+        param2 = updatePositionParam(mode[1], section[2], splitData, relBase);
 
-        if (parameterMode) {
-          switch (parameterMode[0]) {
-            case 0:
-              param1 = splitData[param1] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param1 = splitData[param1 + relativeBase] || 0;
-              break;
-          }
-          switch (parameterMode[1]) {
-            case 0:
-              param2 = splitData[param2] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param2 = splitData[param2 + relativeBase] || 0;
-              break;
-          }
-
-          if (param1 === 0) {
-            i = param2 - jumpForward;
-          }
-        } else {
-          if (splitData[param1] === 0) {
-            i = splitData[param2] - jumpForward;
-          }
+        if (param1 === 0) {
+          i = param2 - jumpForward;
         }
         break;
       case 7:
-        if (rawOpcode.toString().length > 1) {
-          parameterMode = getParameterModes(rawOpcode);
-        }
+        mode = getParameterModes(rawOpcode);
+        param1 = updatePositionParam(mode[0], section[1], splitData, relBase);
+        param2 = updatePositionParam(mode[1], section[2], splitData, relBase);
+        destParam = updateDestParam(mode[2], section[3], relBase);
 
-        param1 = section[1];
-        param2 = section[2];
-        destParam = section[3];
-
-        if (parameterMode) {
-          switch (parameterMode[0]) {
-            case 0:
-              param1 = splitData[param1] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param1 = splitData[param1 + relativeBase] || 0;
-              break;
-          }
-          switch (parameterMode[1]) {
-            case 0:
-              param2 = splitData[param2] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param2 = splitData[param2 + relativeBase] || 0;
-              break;
-          }
-          switch (parameterMode[2]) {
-            case 0:
-              break;
-            case 1:
-              break;
-            case 2:
-              destParam += relativeBase;
-              break;
-          }
-          splitData[destParam] = param1 < param2 ? 1 : 0;
-        } else {
-          splitData[destParam] = splitData[param1] < splitData[param2] ? 1 : 0;
-        }
+        splitData[destParam] = param1 < param2 ? 1 : 0;
         break;
       case 8:
-        if (rawOpcode.toString().length > 1) {
-          parameterMode = getParameterModes(rawOpcode);
-        }
+        mode = getParameterModes(rawOpcode);
+        param1 = updatePositionParam(mode[0], section[1], splitData, relBase);
+        param2 = updatePositionParam(mode[1], section[2], splitData, relBase);
+        destParam = updateDestParam(mode[2], section[3], relBase);
 
-        param1 = section[1];
-        param2 = section[2];
-        destParam = section[3];
-
-        if (parameterMode) {
-          switch (parameterMode[0]) {
-            case 0:
-              param1 = splitData[param1] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param1 = splitData[param1 + relativeBase] || 0;
-              break;
-          }
-          switch (parameterMode[1]) {
-            case 0:
-              param2 = splitData[param2] || 0;
-              break;
-            case 1:
-              break;
-            case 2:
-              param2 = splitData[param2 + relativeBase] || 0;
-              break;
-          }
-          switch (parameterMode[2]) {
-            case 0:
-              break;
-            case 1:
-              break;
-            case 2:
-              destParam += relativeBase;
-              break;
-          }
-          splitData[destParam] = param1 === param2 ? 1 : 0;
-        } else {
-          splitData[destParam] =
-            splitData[param1] === splitData[param2] ? 1 : 0;
-        }
+        splitData[destParam] = param1 === param2 ? 1 : 0;
         break;
       case 9:
-        if (rawOpcode.toString().length > 1) {
-          parameterMode = getParameterModes(rawOpcode);
-        }
-
-        param1 = section[1];
-
-        if (parameterMode) {
-          switch (parameterMode[0]) {
-            case 0:
-              relativeBase += splitData[param1] || 0;
-            case 1:
-              relativeBase += param1;
-              break;
-            case 2:
-              relativeBase += splitData[param1 + relativeBase] || 0;
-              break;
-          }
-        } else {
-          relativeBase += splitData[param1] || 0;
-        }
+        mode = getParameterModes(rawOpcode);
+        param1 = updatePositionParam(mode[0], section[1], splitData, relBase);
+        relBase += param1;
         break;
       case 99:
-        return returnCode;
-        break;
+        return;
     }
   }
 };

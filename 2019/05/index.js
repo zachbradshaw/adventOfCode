@@ -6,4 +6,4 @@ const data = fs
   .trim();
 
 console.log("Part one:", computer([1], data).code);
-// console.log("Part two:", computer([5], data).code);
+console.log("Part two:", computer([5], data).code);
