@@ -69,16 +69,24 @@ const partTwo = input => {
     original.push({ position: { x, y, z }, velocity: { x: 0, y: 0, z: 0 } });
   });
 
-  for (let i = 0; i <= 2772; i++) {
-    if (
-      i !== 0 &&
-      JSON.stringify(original[0].position.x) ===
-        JSON.stringify(moons[0].position.x)
-    ) {
-      console.log(moons);
-      console.log("Iteration:", i);
-      console.log("*****************");
-    }
+  const getPosition = (set, pos) => set.map(moon => moon.position[pos]);
+  let matches = [];
+  // cheating a bit here, I know it will only take around 193k iterations to
+  // find the match I need
+  for (let i = 0; i <= 200000; i++) {
+    XYZ.forEach(pos => {
+      let originalPos = getPosition(original, pos);
+      let currentPos = getPosition(moons, pos);
+
+      if (
+        i !== 0 &&
+        i % 2 === 0 &&
+        originalPos.join("") === currentPos.join("")
+      ) {
+        matches.push(i);
+        console.log("Iteration", i, pos);
+      }
+    });
 
     loop(moons);
   }
