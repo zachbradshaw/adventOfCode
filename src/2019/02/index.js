@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const input = fs
-  .readFileSync(path.resolve(__dirname, process.argv[2]), "utf8")
+  .readFileSync(path.resolve(__dirname, "./input.txt"), "utf8")
   .trim();
 
 function partOne(input, noun, verb) {
