@@ -1,2 +1,4 @@
 node_modules/
-2017/
+.DS_store
+*.txt
+*.swp
