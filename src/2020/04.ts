@@ -155,8 +155,9 @@ const partTwo = () => {
   })
   return validPass
 }
-// passports.forEach(p => {
-//   console.log(p)
-// })
+
+console.log('--- Day 4: Passport Processing ---')
+console.time('Completed in')
 console.log('Part one:', partOne())
 console.log('Part two:', partTwo())
+console.timeEnd('Completed in')

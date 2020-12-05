@@ -42,7 +42,7 @@ const findTrees = (slopes: { x: number; y: number }[]) => {
 }
 
 console.log('--- Day 3: Toboggan Trajectory ---')
-console.time('Completed in:')
+console.time('Completed in')
 console.log('Part one:', findTrees([{ x: 3, y: 1 }])[0])
 console.log(
   'Part two:',
@@ -54,4 +54,4 @@ console.log(
     { x: 1, y: 2 },
   ]).reduce((prev, curr) => prev * curr)
 )
-console.timeEnd('Completed in:')
+console.timeEnd('Completed in')
