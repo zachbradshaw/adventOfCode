@@ -1,7 +1,9 @@
 node_modules/
-.DS_store
+.DS_Store
 *.swp
 *.swo
 src/**/*.txt
 src/**/*.swp
 src/**/*.swo
+src/**/built
+src/**/*.sh

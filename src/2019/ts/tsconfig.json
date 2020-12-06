@@ -6,7 +6,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./built"
+    "outDir": "./built",
+    "sourceMap": true
   },
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Recommended"
