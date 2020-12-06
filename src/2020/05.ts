@@ -16,6 +16,21 @@ const buildRange = (min, max) => {
 
 const ids = []
 input.forEach(seat => {
+  // how I should have done it
+  // const id = parseInt(
+  //   seat
+  //     .split('')
+  //     .map(char => {
+  //       if (char === 'B' || char === 'R') {
+  //         return 1
+  //       }
+  //       return 0
+  //     })
+  //     .join(''),
+  //   2
+  // )
+
+  // how I actually did it
   let range = buildRange(0, 127)
   let col = buildRange(0, 7)
   seat.split('').forEach(char => {
@@ -29,7 +44,8 @@ input.forEach(seat => {
       col = col.slice(0, Math.floor(col.length / 2))
     }
   })
-  ids.push(range[0] * 8 + col[0])
+  const id = range[0] * 8 + col[0]
+  ids.push(id)
 })
 
 console.log('--- Day 5: Binary Boarding ---')
