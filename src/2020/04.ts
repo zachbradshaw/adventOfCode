@@ -8,10 +8,11 @@ const parse = fs
   .join('\n')
   .split('\n')
 
-const yearTest = (year, min, max) =>
+const yearTest = (year: string, min: number, max: number): boolean =>
   year.length !== 4 || Number(year) < min || Number(year) > max
-const eclTest = val => !'amb blu brn gry grn hzl oth'.includes(val)
-const hclTest = val => {
+const eclTest = (val: string): boolean =>
+  !'amb blu brn gry grn hzl oth'.includes(val)
+const hclTest = (val: string): boolean => {
   const splitVal = val.split('')
   const hash = splitVal[0]
   let validChars = true
@@ -25,8 +26,8 @@ const hclTest = val => {
 
   return hash !== '#' || alphaNums.join('').length !== 6 || !validChars
 }
-const pidTest = val => val.length !== 9
-const hgtTest = val => {
+const pidTest = (val: string): boolean => val.length !== 9
+const hgtTest = (val: string): boolean => {
   const height = Number(
     val
       .split('')
@@ -51,8 +52,8 @@ const hgtTest = val => {
 }
 
 const partOne = () => {
-  const passports = []
-  let fields = []
+  const passports: string[][] = []
+  let fields: string[] = []
   parse.forEach((field, index) => {
     if (field !== '') {
       fields.push(field.slice(0, 3))
@@ -78,9 +79,10 @@ const partOne = () => {
   return valid
 }
 
+type PassportField = { field: string; val: string }
 const partTwo = () => {
-  const passports = []
-  let fields = []
+  const passports: PassportField[][] = []
+  let fields: PassportField[] = []
   parse.forEach((f, index) => {
     if (f !== '') {
       const [field, val] = f.split(':')

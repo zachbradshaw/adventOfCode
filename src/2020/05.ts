@@ -6,15 +6,15 @@ const input = fs
   .trim()
   .split('\n')
 
-const buildRange = (min, max) => {
+const buildRange = (size: number): number[] => {
   let range = []
-  for (let i = min; i <= max; i++) {
+  for (let i = 0; i <= size; i++) {
     range.push(i)
   }
   return range
 }
 
-const ids = []
+const ids: number[] = []
 input.forEach(seat => {
   // how I should have done it
   // const id = parseInt(
@@ -31,8 +31,8 @@ input.forEach(seat => {
   // )
 
   // how I actually did it
-  let range = buildRange(0, 127)
-  let col = buildRange(0, 7)
+  let range = buildRange(127)
+  let col = buildRange(7)
   seat.split('').forEach(char => {
     if (char === 'F') {
       range = range.slice(0, Math.floor(range.length / 2))
