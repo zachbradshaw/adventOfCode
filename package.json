@@ -2,16 +2,10 @@
   "name": "adventOfCode",
   "version": "1.0.0",
   "description": "🎄 Advent of Code 🎄",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest"
-  },
   "author": "Zach Bradshaw <bradshaw.zachary@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "@tsconfig/recommended": "^1.0.1",
-    "jest": "^27.4.3",
-    "prettier": "^2.5.0"
+    "@tsconfig/recommended": "^1.0.1"
   },
   "dependencies": {
     "@types/node": "^16.11.11"
